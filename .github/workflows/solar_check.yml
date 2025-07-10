@@ -21,14 +21,13 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run script only if between 05:00–19:30 PKT
+      - name: Run script only if between 04:00–19:00 PKT
         run: |
           echo "Current UTC hour: $(date -u +'%H')"
           PAK_HOUR=$(TZ=Asia/Karachi date +'%H')
-          PAK_MIN=$(TZ=Asia/Karachi date +'%M')
-          echo "Current Pakistan time: $PAK_HOUR:$PAK_MIN"
+          echo "Current Pakistan time hour: $PAK_HOUR"
 
-          if [ "$PAK_HOUR" -ge 5 ] && { [ "$PAK_HOUR" -lt 19 ] || { [ "$PAK_HOUR" -eq 19 ] && [ "$PAK_MIN" -le 30 ]; }; }; then
+          if [ "$PAK_HOUR" -ge 4 ] && [ "$PAK_HOUR" -lt 19 ]; then
             echo "✅ In allowed hours, running script..."
             python push_alert.py
           else
