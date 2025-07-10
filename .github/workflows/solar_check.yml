@@ -1,0 +1,36 @@
+name: Solar Load Checker
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # every 5 minutes UTC
+
+jobs:
+  run-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Run script only if between 05:00–19:30 PKT
+      run: |
+        echo "Current UTC hour: $(date -u +'%H')"
+        PAK_HOUR=$(TZ=Asia/Karachi date +'%H')
+        PAK_MIN=$(TZ=Asia/Karachi date +'%M')
+        echo "Current Pakistan time: $PAK_HOUR:$PAK_MIN"
+
+        # Only run if time between 05:00 and 19:30
+        if [ "$PAK_HOUR" -ge 5 ] && { [ "$PAK_HOUR" -lt 19 ] || { [ "$PAK_HOUR" -eq 19 ] && [ "$PAK_MIN" -le 30 ]; }; }; then
+          echo "✅ In allowed hours, running script..."
+          python push_alert.py
+        else
+          echo "🌙 Outside allowed hours, skipping."
+        fi
