@@ -1,9 +1,10 @@
 name: Solar Load Checker
 
 on:
-  workflow_dispatch:      # ← allows manual run
+  workflow_dispatch:      # allows manual run in Actions tab
   schedule:
-    - cron: '*/5 * * * *#schedule:
+    - cron: '*/5 * * * *'  # every 5 minutes UTC
+
 jobs:
   run-check:
     runs-on: ubuntu-latest
