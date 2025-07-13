@@ -1,7 +1,7 @@
 name: Solar Load Checker
 
 on:
-  workflow_dispatch:                # allows manual run in GitHub Actions UI
+  workflow_dispatch:        # allows manual run from GitHub UI
 
 jobs:
   run-check:
@@ -19,5 +19,9 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run solar checker script
+      - name: Run Python script
+        env:
+          PUSHBULLET_TOKEN: ${{ secrets.PUSHBULLET_TOKEN }}
+          API_URL_1: ${{ secrets.API_URL_1 }}
+          API_URL_2: ${{ secrets.API_URL_2 }}
         run: python push_alert.py
