@@ -1,9 +1,9 @@
 name: Solar Load Checker
 
 on:
-  workflow_dispatch:                # allows manual run
+  workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'           # every 5 minutes UTC
+    - cron: '*/5 * * * *'  # every 5 minutes (UTC)
 
 jobs:
   run-check:
@@ -21,15 +21,5 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run script only if between 04:00–19:00 PKT
-        run: |
-          echo "Current UTC hour: $(date -u +'%H')"
-          PAK_HOUR=$(TZ=Asia/Karachi date +'%H')
-          echo "Current Pakistan time hour: $PAK_HOUR"
-
-          if [ "$PAK_HOUR" -ge 4 ] && [ "$PAK_HOUR" -lt 19 ]; then
-            echo "✅ In allowed hours, running script..."
-            python push_alert.py
-          else
-            echo "🌙 Outside allowed hours, skipping."
-          fi
+      - name: Run Python script
+        run: python push_alert.py
