@@ -26,4 +26,4 @@ jobs:
           PUSHBULLET_TOKEN: ${{ secrets.PUSHBULLET_TOKEN }}
           API_URL_1: ${{ secrets.API_URL_1 }}
           API_URL_2: ${{ secrets.API_URL_2 }}
-        run: push_alert.py
+        run: python push_alert.py
