@@ -1,27 +1,29 @@
-name: Solar Load Checker
+name: run-check
 
 on:
-  workflow_dispatch:        # allows manual run from GitHub UI
+  schedule:
+    - cron: '*/5 * * * *'    # every 5 minutes
+  workflow_dispatch:        # allow manual trigger
 
 jobs:
-  run-check:
+  check:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run Python script
+      - name: Run script
         env:
           PUSHBULLET_TOKEN: ${{ secrets.PUSHBULLET_TOKEN }}
           API_URL_1: ${{ secrets.API_URL_1 }}
           API_URL_2: ${{ secrets.API_URL_2 }}
-        run: python push_alert.py
+        run: push_alert.py
