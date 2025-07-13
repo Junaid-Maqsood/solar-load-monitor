@@ -3,13 +3,12 @@ import time
 from datetime import datetime, timezone, timedelta
 
 # === CONFIG ===
-PUSHBULLET_TOKEN = 'o.snUuOZLqTvUQ0EDJPZu1DePxzSJwhKNB'
+
+PUSHBULLET_TOKEN = os.environ.get('PUSHBULLET_TOKEN')
 CHANNEL_TAG = 'solaralert'
 
-API_URL_1 = 'https://web.dessmonitor.com/public/?sign=43d88effb8c479157202abf439574e36d062a79a&salt=1751992371034&token=b1793f103fbfc825c9939b86401a851ceb2ac28c20ad4fd67daffb63acfa2fcc&action=querySPDeviceLastData&source=1&devcode=2452&pn=W0051424410103&devaddr=1&sn=96142411101312&i18n=en_US'
-
-API_URL_2 = 'https://web.dessmonitor.com/public/?sign=9d73c40c042348ed931c65554d9a0a8d85a8c4c2&salt=1752041384124&token=b1793f103fbfc825c9939b86401a851ceb2ac28c20ad4fd67daffb63acfa2fcc&action=querySPDeviceLastData&source=1&devcode=2452&pn=W0036398935471&devaddr=1&sn=96142411100536&i18n=en_US'
-
+API_URL_1 = os.environ.get('API_URL_1')
+API_URL_2 = os.environ.get('API_URL_2')
 # === FUNCTIONS ===
 
 def send_notification_to_channel(title, body):
