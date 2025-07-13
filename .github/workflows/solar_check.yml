@@ -1,9 +1,7 @@
 name: Solar Load Checker
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '*/5 * * * *'  # every 5 minutes (UTC)
+  workflow_dispatch:                # allows manual run in GitHub Actions UI
 
 jobs:
   run-check:
@@ -21,5 +19,5 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run Python script
+      - name: Run solar checker script
         run: python push_alert.py
