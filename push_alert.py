@@ -1,15 +1,14 @@
 import requests
-import time
 from datetime import datetime, timezone, timedelta
 import os
 
 # === CONFIG ===
-
 PUSHBULLET_TOKEN = os.environ.get('PUSHBULLET_TOKEN')
 CHANNEL_TAG = 'solaralert'
 
 API_URL_1 = os.environ.get('API_URL_1')
 API_URL_2 = os.environ.get('API_URL_2')
+
 # === FUNCTIONS ===
 
 def send_notification_to_channel(title, body):
@@ -90,59 +89,56 @@ def get_inverter_data(api_url):
         send_notification_to_self("⚠ Exception Occurred", msg)
         return (0, 0, 0, None)
 
-# === MAIN LOOP ===
+# === MAIN ===
 if __name__ == "__main__":
-    while True:
-        now_utc = datetime.now(timezone.utc)
-        now_pak = now_utc + timedelta(hours=5)
-        hour = now_pak.hour
-        minute = now_pak.minute
-        print(f"\n🕒 Current Pakistan time: {hour}:{minute:02d}")
+    now_utc = datetime.now(timezone.utc)
+    now_pak = now_utc + timedelta(hours=5)
+    hour = now_pak.hour
+    minute = now_pak.minute
+    print(f"\n🕒 Current Pakistan time: {hour}:{minute:02d}")
 
-        if 4 <= hour < 19:  # between 4 AM and 7 PM
-            # Check 1st Floor
-            pv1_1, pv2_1, load_1, ts_1 = get_inverter_data(API_URL_1)
-            pv_total_1 = pv1_1 + pv2_1
-            print(f"1st Floor → PV Total: {pv_total_1}W | Load: {load_1}W | Timestamp: {ts_1}")
+    if 4 <= hour < 19:  # between 4 AM and 7 PM
+        # Check 1st Floor
+        pv1_1, pv2_1, load_1, ts_1 = get_inverter_data(API_URL_1)
+        pv_total_1 = pv1_1 + pv2_1
+        print(f"1st Floor → PV Total: {pv_total_1}W | Load: {load_1}W | Timestamp: {ts_1}")
 
-            if ts_1:
-                try:
-                    ts_time = datetime.strptime(ts_1, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc) + timedelta(hours=5)
-                    age = (now_pak - ts_time).total_seconds() / 60
-                    if age > 30:
-                        print(f"⚠ Stale data detected: data is {int(age)} minutes old (timestamp: {ts_1})")
-                        send_notification_to_self("⚠ Stale Data on 1st Floor", f"Data is {int(age)} minutes old! Timestamp: {ts_1}")
-                except Exception as e:
-                    print(f"⚠ Error parsing timestamp: {e}")
+        if ts_1:
+            try:
+                ts_time = datetime.strptime(ts_1, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc) + timedelta(hours=5)
+                age = (now_pak - ts_time).total_seconds() / 60
+                if age > 30:
+                    print(f"⚠ Stale data detected: data is {int(age)} minutes old (timestamp: {ts_1})")
+                    send_notification_to_self("⚠ Stale Data on 1st Floor", f"Data is {int(age)} minutes old! Timestamp: {ts_1}")
+            except Exception as e:
+                print(f"⚠ Error parsing timestamp: {e}")
 
-            if pv_total_1 > 350 and load_1 > pv_total_1:
-                message = f"1st Floor:\nSolar: {pv_total_1}W\nLoad: {load_1}W\n\nReduce your Load!"
-                send_notification_to_channel("⚡ 1st Floor Solar Update", message)
-            else:
-                print("ℹ 1st Floor: No alert needed.")
-
-            # Check Ground Floor
-            pv1_2, pv2_2, load_2, ts_2 = get_inverter_data(API_URL_2)
-            pv_total_2 = pv1_2 + pv2_2
-            print(f"Ground Floor → PV Total: {pv_total_2}W | Load: {load_2}W | Timestamp: {ts_2}")
-
-            if ts_2:
-                try:
-                    ts_time = datetime.strptime(ts_2, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc) + timedelta(hours=5)
-                    age = (now_pak - ts_time).total_seconds() / 60
-                    if age > 30:
-                        print(f"⚠ Stale data detected: data is {int(age)} minutes old (timestamp: {ts_2})")
-                        send_notification_to_self("⚠ Stale Data on Ground Floor", f"Data is {int(age)} minutes old! Timestamp: {ts_2}")
-                except Exception as e:
-                    print(f"⚠ Error parsing timestamp: {e}")
-
-            if pv_total_2 > 350 and load_2 > pv_total_2:
-                message = f"Ground Floor:\nSolar: {pv_total_2}W\nLoad: {load_2}W\n\nReduce your Load!"
-                send_notification_to_channel("⚡ Ground Floor Solar Update", message)
-            else:
-                print("ℹ Ground Floor: No alert needed.")
-
+        if pv_total_1 > 350 and load_1 > pv_total_1:
+            message = f"1st Floor:\nSolar: {pv_total_1}W\nLoad: {load_1}W\n\nReduce your Load!"
+            send_notification_to_channel("⚡ 1st Floor Solar Update", message)
         else:
-            print("🌙 Outside selected hours, skipping check.")
+            print("ℹ 1st Floor: No alert needed.")
 
-        time.sleep(300)  # wait 5 minutes before next check
+        # Check Ground Floor
+        pv1_2, pv2_2, load_2, ts_2 = get_inverter_data(API_URL_2)
+        pv_total_2 = pv1_2 + pv2_2
+        print(f"Ground Floor → PV Total: {pv_total_2}W | Load: {load_2}W | Timestamp: {ts_2}")
+
+        if ts_2:
+            try:
+                ts_time = datetime.strptime(ts_2, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc) + timedelta(hours=5)
+                age = (now_pak - ts_time).total_seconds() / 60
+                if age > 30:
+                    print(f"⚠ Stale data detected: data is {int(age)} minutes old (timestamp: {ts_2})")
+                    send_notification_to_self("⚠ Stale Data on Ground Floor", f"Data is {int(age)} minutes old! Timestamp: {ts_2}")
+            except Exception as e:
+                print(f"⚠ Error parsing timestamp: {e}")
+
+        if pv_total_2 > 350 and load_2 > pv_total_2:
+            message = f"Ground Floor:\nSolar: {pv_total_2}W\nLoad: {load_2}W\n\nReduce your Load!"
+            send_notification_to_channel("⚡ Ground Floor Solar Update", message)
+        else:
+            print("ℹ Ground Floor: No alert needed.")
+
+    else:
+        print("🌙 Outside selected hours, skipping check.")
