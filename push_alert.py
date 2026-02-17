@@ -3,8 +3,8 @@ import time
 from datetime import datetime, timedelta, timezone
 
 # === CONFIG ===
-PUSHBULLET_TOKEN = 'o.snUuOZLqTvUQ0EDJPZu1DePxzSJwhKNB'
-CHANNEL_TAG = "solaralert"
+PUSHBULLET_TOKEN = <addtokenhere>
+CHANNEL_TAG = <chanelname>
 
 # Pakistan timezone
 PKT = timezone(timedelta(hours=5))
@@ -182,3 +182,4 @@ if __name__ == "__main__":
 
         # Sleep 5 minutes before next check
         time.sleep(300)
+
